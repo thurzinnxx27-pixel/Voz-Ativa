@@ -35,9 +35,15 @@
         .submit-form .full-width { grid-column: 1 / -1; }
         .form-group { margin-bottom: 0; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #475569; font-size: 0.9rem; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Inter', sans-serif; outline: none; transition: border 0.2s; }
-        .form-group input:focus, .form-group select:focus { border-color: #4f46e5; }
+        .form-group input[type="text"], .form-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Inter', sans-serif; outline: none; transition: border 0.2s; }
+        .form-group input[type="text"]:focus, .form-group select:focus { border-color: #4f46e5; }
+        .form-group input[type="text"]:disabled { background-color: #f1f5f9; cursor: not-allowed; color: #94a3b8; }
         
+        /* Checkbox Anônimo */
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+        .checkbox-group input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #4f46e5; }
+        .checkbox-group label { margin-bottom: 0; font-size: 0.85rem; color: #64748b; cursor: pointer; font-weight: 500; }
+
         .btn-submit { background: #4f46e5; color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-family: 'Inter', sans-serif; transition: background 0.2s; width: 100%; font-size: 1rem; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .btn-submit:hover { background: #4338ca; }
 
@@ -134,10 +140,25 @@
             </div>
             <p style="margin-bottom: 20px; color: #64748b; font-size: 0.95rem;">Tem uma sugestão para melhorar a escola? Preencha abaixo e ela entrará na votação.</p>
             <div class="submit-form">
-                <div class="form-group"><label>Seu Nome e Turma:</label><input type="text" id="publicAuthor" placeholder="Ex: Lucas Silva 8°B"></div>
-                <div class="form-group"><label>Categoria (Digite você mesmo):</label><input type="text" id="publicCategory" placeholder="Ex: Infraestrutura, Merenda, Robótica..."></div>
-                <div class="form-group full-width"><label>Qual é a sua proposta?</label><input type="text" id="publicTitle" placeholder="Ex: Criar um clube de programação no contraturno"></div>
-                <div class="full-width"><button class="btn-submit" onclick="submitPublicProposal()">🚀 Enviar Proposta para Votação</button></div>
+                <div class="form-group">
+                    <label>Seu Nome e Turma:</label>
+                    <input type="text" id="publicAuthor" placeholder="Ex: Lucas Silva 8°B">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isAnonymous" onchange="toggleAnonymous()">
+                        <label for="isAnonymous">Desejo enviar de forma anônima 🕵️‍♂️</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Categoria (Digite você mesmo):</label>
+                    <input type="text" id="publicCategory" placeholder="Ex: Infraestrutura, Merenda, Robótica...">
+                </div>
+                <div class="form-group full-width">
+                    <label>Qual é a sua proposta?</label>
+                    <input type="text" id="publicTitle" placeholder="Ex: Criar um clube de programação no contraturno">
+                </div>
+                <div class="full-width">
+                    <button class="btn-submit" onclick="submitPublicProposal()">🚀 Enviar Proposta para Votação</button>
+                </div>
             </div>
         </div>
 
@@ -188,7 +209,7 @@
     <div class="modal-overlay" id="loginModal">
         <div class="modal-content">
             <h2>🔒 Moderação</h2>
-            <div class="form-group"><label>Senha:</label><input type="password" id="adminPassword" placeholder="Digite a senha..."></div>
+            <div class="form-group"><label>Senha:</label><input type="password" id="adminPassword" placeholder="Digite a senha..." style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px;"></div>
             <button class="btn" onclick="loginAdmin()">Entrar no Painel</button>
             <button class="btn btn-close" onclick="closeModal('loginModal')">Cancelar</button>
         </div>
@@ -223,9 +244,7 @@
         let meusVotos = JSON.parse(localStorage.getItem('meusVotosVozAtiva')) || [];
         let dbRef;
 
-        // ==========================================
-        // LISTA DE PALAVRAS PROIBIDAS (Você pode adicionar mais aqui)
-        // ==========================================
+        // --- LISTA DE PALAVRAS PROIBIDAS ---
         const PALAVRAS_PROIBIDAS = [
             "idiota", "burro", "imbecil", "otario", "otário", "babaca", 
             "merda", "porra", "caralho", "foda", "puta", "bosta", 
@@ -234,17 +253,29 @@
             "lixo", "nojento", "nojenta", "chato", "chata", "cu", "buceta", "pinto"
         ];
 
-        // Verifica se o texto tem alguma palavra proibida
         function temPalavraProibida(texto) {
             let textoMinusculo = texto.toLowerCase();
             for (let palavra of PALAVRAS_PROIBIDAS) {
-                // Cria uma expressão regular para buscar a palavra inteira, ignorando maiúsculas/minúsculas
                 let regex = new RegExp("\\b" + palavra + "\\b", "i");
                 if (regex.test(textoMinusculo)) {
                     return true;
                 }
             }
             return false;
+        }
+
+        // --- FUNÇÃO PARA O CHECKBOX DE ANÔNIMO ---
+        function toggleAnonymous() {
+            const isAnonymous = document.getElementById('isAnonymous').checked;
+            const authorInput = document.getElementById('publicAuthor');
+
+            if (isAnonymous) {
+                authorInput.value = "Anônimo";
+                authorInput.disabled = true;
+            } else {
+                authorInput.value = "";
+                authorInput.disabled = false;
+            }
         }
 
         // Inicialização
@@ -287,30 +318,38 @@
 
         // --- FUNÇÕES PÚBLICAS ---
         function submitPublicProposal() {
-            const author = document.getElementById('publicAuthor').value.trim();
+            const isAnonymous = document.getElementById('isAnonymous').checked;
+            let author = document.getElementById('publicAuthor').value.trim();
             const title = document.getElementById('publicTitle').value.trim();
             const category = document.getElementById('publicCategory').value.trim();
+
+            // Se for anônimo, força o nome a ser "Anônimo"
+            if (isAnonymous) {
+                author = "Anônimo";
+            }
             
             if (!author || !title || !category) { 
-                alert('Por favor, preencha seu nome, a categoria e a sua proposta.'); 
+                alert('Por favor, preencha a categoria e a sua proposta (e seu nome, se não for anônimo).'); 
                 return; 
             }
 
-            // --- FILTRO DE SEGURANÇA ---
+            // Filtro de segurança
             if (temPalavraProibida(author) || temPalavraProibida(title) || temPalavraProibida(category)) {
                 alert("⚠️ Sua proposta contém palavras inadequadas ou desrespeitosas. Por favor, reescreva de forma educada.");
-                return; // Impede o envio
+                return;
             }
-            // ----------------------------
             
             propostas.push({ id: Date.now(), title: title, author: author, category: category, votes: 0 });
             
+            // Limpa os campos e desmarca o checkbox
             document.getElementById('publicAuthor').value = ''; 
+            document.getElementById('publicAuthor').disabled = false;
+            document.getElementById('isAnonymous').checked = false;
             document.getElementById('publicTitle').value = '';
             document.getElementById('publicCategory').value = '';
             
             saveData(); 
-            alert('Sua proposta foi enviada! Lembre-se que ela passará por moderação.');
+            alert('Sua proposta foi enviada com sucesso!');
         }
 
         function vote(id) {
