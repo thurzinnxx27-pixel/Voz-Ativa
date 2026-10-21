@@ -41,6 +41,9 @@
         .btn-submit { background: #4f46e5; color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-family: 'Inter', sans-serif; transition: background 0.2s; width: 100%; font-size: 1rem; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .btn-submit:hover { background: #4338ca; }
 
+        /* Aviso de Moderação */
+        .warning-text { font-size: 0.8rem; color: #b45309; background: #fffbeb; padding: 10px; border-radius: 6px; border: 1px solid #fcd34d; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+
         /* Barra de Pesquisa */
         .search-bar { display: flex; align-items: center; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; padding: 5px 15px; margin-bottom: 15px; transition: all 0.2s; }
         .search-bar:focus-within { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
@@ -118,49 +121,23 @@
     <div class="container">
         <!-- Estatísticas -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">💡</div>
-                <div class="stat-info">
-                    <div class="number" id="totalPropostas">0</div>
-                    <div class="label">Propostas</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-info">
-                    <div class="number" id="totalVotos">0</div>
-                    <div class="label">Votos Totais</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🏫</div>
-                <div class="stat-info">
-                    <div class="number" id="totalCategorias">0</div>
-                    <div class="label">Categorias</div>
-                </div>
-            </div>
+            <div class="stat-card"><div class="stat-icon">💡</div><div class="stat-info"><div class="number" id="totalPropostas">0</div><div class="label">Propostas</div></div></div>
+            <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-info"><div class="number" id="totalVotos">0</div><div class="label">Votos Totais</div></div></div>
+            <div class="stat-card"><div class="stat-icon">🏫</div><div class="stat-info"><div class="number" id="totalCategorias">0</div><div class="label">Categorias</div></div></div>
         </div>
 
         <!-- Formulário Público de Envio -->
         <div class="panel">
             <h2>💡 Envie sua ideia!</h2>
+            <div class="warning-text">
+                ⚠️ <strong>Atenção:</strong> Todas as propostas passam por moderação. Não envie palavras ofensivas ou desrespeitosas.
+            </div>
             <p style="margin-bottom: 20px; color: #64748b; font-size: 0.95rem;">Tem uma sugestão para melhorar a escola? Preencha abaixo e ela entrará na votação.</p>
             <div class="submit-form">
-                <div class="form-group">
-                    <label>Seu Nome e Turma:</label>
-                    <input type="text" id="publicAuthor" placeholder="Ex: Lucas Silva 8°B">
-                </div>
-                <div class="form-group">
-                    <label>Categoria (Digite você mesmo):</label>
-                    <input type="text" id="publicCategory" placeholder="Ex: Infraestrutura, Merenda, Robótica...">
-                </div>
-                <div class="form-group full-width">
-                    <label>Qual é a sua proposta?</label>
-                    <input type="text" id="publicTitle" placeholder="Ex: Criar um clube de programação no contraturno">
-                </div>
-                <div class="full-width">
-                    <button class="btn-submit" onclick="submitPublicProposal()">🚀 Enviar Proposta</button>
-                </div>
+                <div class="form-group"><label>Seu Nome e Turma:</label><input type="text" id="publicAuthor" placeholder="Ex: Lucas Silva 8°B"></div>
+                <div class="form-group"><label>Categoria (Digite você mesmo):</label><input type="text" id="publicCategory" placeholder="Ex: Infraestrutura, Merenda, Robótica..."></div>
+                <div class="form-group full-width"><label>Qual é a sua proposta?</label><input type="text" id="publicTitle" placeholder="Ex: Criar um clube de programação no contraturno"></div>
+                <div class="full-width"><button class="btn-submit" onclick="submitPublicProposal()">🚀 Enviar Proposta para Votação</button></div>
             </div>
         </div>
 
@@ -173,9 +150,7 @@
             </div>
             <div class="filter-row">
                 <span>Filtrar por categoria:</span>
-                <select id="filterCategoria" onchange="filterRanking()">
-                    <option value="Todas">Todas as categorias</option>
-                </select>
+                <select id="filterCategoria" onchange="filterRanking()"><option value="Todas">Todas as categorias</option></select>
                 <button class="clear-btn" onclick="clearSearch()">Limpar Filtros</button>
             </div>
         </div>
@@ -213,10 +188,7 @@
     <div class="modal-overlay" id="loginModal">
         <div class="modal-content">
             <h2>🔒 Moderação</h2>
-            <div class="form-group">
-                <label>Senha:</label>
-                <input type="password" id="adminPassword" placeholder="Digite a senha...">
-            </div>
+            <div class="form-group"><label>Senha:</label><input type="password" id="adminPassword" placeholder="Digite a senha..."></div>
             <button class="btn" onclick="loginAdmin()">Entrar no Painel</button>
             <button class="btn btn-close" onclick="closeModal('loginModal')">Cancelar</button>
         </div>
@@ -225,6 +197,7 @@
     <div class="modal-overlay" id="adminPanelModal">
         <div class="modal-content">
             <h2>⚙️ Painel de Moderação</h2>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">Analise as propostas abaixo. Se encontrar algo desrespeitoso, clique em <strong style="color:#ef4444;">Excluir</strong>.</p>
             <div class="admin-list" id="adminPropList"></div>
             <button class="btn btn-danger" onclick="clearAllData()">🗑️ Limpar Todos os Dados</button>
             <button class="btn btn-close" onclick="closeModal('adminPanelModal')">Fechar Painel</button>
@@ -249,6 +222,30 @@
         let propostas = [];
         let meusVotos = JSON.parse(localStorage.getItem('meusVotosVozAtiva')) || [];
         let dbRef;
+
+        // ==========================================
+        // LISTA DE PALAVRAS PROIBIDAS (Você pode adicionar mais aqui)
+        // ==========================================
+        const PALAVRAS_PROIBIDAS = [
+            "idiota", "burro", "imbecil", "otario", "otário", "babaca", 
+            "merda", "porra", "caralho", "foda", "puta", "bosta", 
+            "desgracado", "desgraçado", "escroto", "viado", "bicha", 
+            "macaco", "preto", "gordo", "feia", "feio", "retardado", 
+            "lixo", "nojento", "nojenta", "chato", "chata", "cu", "buceta", "pinto"
+        ];
+
+        // Verifica se o texto tem alguma palavra proibida
+        function temPalavraProibida(texto) {
+            let textoMinusculo = texto.toLowerCase();
+            for (let palavra of PALAVRAS_PROIBIDAS) {
+                // Cria uma expressão regular para buscar a palavra inteira, ignorando maiúsculas/minúsculas
+                let regex = new RegExp("\\b" + palavra + "\\b", "i");
+                if (regex.test(textoMinusculo)) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         // Inicialização
         function init() {
@@ -288,7 +285,7 @@
             });
         }
 
-        // --- FUNÇÕES PÚBLICAS (ALUNOS) ---
+        // --- FUNÇÕES PÚBLICAS ---
         function submitPublicProposal() {
             const author = document.getElementById('publicAuthor').value.trim();
             const title = document.getElementById('publicTitle').value.trim();
@@ -298,6 +295,13 @@
                 alert('Por favor, preencha seu nome, a categoria e a sua proposta.'); 
                 return; 
             }
+
+            // --- FILTRO DE SEGURANÇA ---
+            if (temPalavraProibida(author) || temPalavraProibida(title) || temPalavraProibida(category)) {
+                alert("⚠️ Sua proposta contém palavras inadequadas ou desrespeitosas. Por favor, reescreva de forma educada.");
+                return; // Impede o envio
+            }
+            // ----------------------------
             
             propostas.push({ id: Date.now(), title: title, author: author, category: category, votes: 0 });
             
@@ -306,15 +310,14 @@
             document.getElementById('publicCategory').value = '';
             
             saveData(); 
-            alert('Sua proposta foi enviada com sucesso! Vote nela e compartilhe com os amigos.');
+            alert('Sua proposta foi enviada! Lembre-se que ela passará por moderação.');
         }
 
         function vote(id) {
             if (meusVotos.includes(id)) {
-                alert("Você já votou nesta proposta! Compartilhe com um amigo para ele votar também.");
+                alert("Você já votou nesta proposta!");
                 return;
             }
-
             const prop = propostas.find(p => p.id === id);
             if (prop) {
                 prop.votes += 1;
@@ -324,7 +327,7 @@
             }
         }
 
-        // --- ADMIN (MODERAÇÃO) ---
+        // --- ADMIN ---
         function openAdminLogin() { document.getElementById('loginModal').style.display = 'flex'; document.getElementById('adminPassword').value = ''; }
         function loginAdmin() {
             if (document.getElementById('adminPassword').value === "admin123") {
@@ -333,62 +336,43 @@
             } else { alert('Senha incorreta!'); }
         }
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-
         function removeProposta(id) {
-            if (confirm("Excluir esta proposta permanentemente? (Use isso para apagar bobagens ou spam)")) { 
+            if (confirm("Excluir esta proposta? (Isso é recomendado se houver desrespeito).")) { 
                 propostas = propostas.filter(p => p.id !== id); saveData(); 
             }
         }
-
         function clearAllData() {
-            if (confirm("ATENÇÃO! Isso apagará TODAS as propostas e votos. Quer mesmo resetar a plataforma?")) {
-                propostas = []; saveData();
-                localStorage.removeItem('meusVotosVozAtiva');
-                meusVotos = [];
-                alert('Plataforma resetada.');
-            }
+            if (confirm("Apagar TODAS as propostas?")) { propostas = []; saveData(); localStorage.removeItem('meusVotosVozAtiva'); meusVotos = []; }
         }
 
         // --- RENDERIZAÇÃO ---
         function updateUI() {
             const totalVotos = propostas.reduce((sum, p) => sum + p.votes, 0);
             const uniqueCats = new Set(propostas.map(p => p.category.toLowerCase()));
-            
             document.getElementById('totalPropostas').textContent = propostas.length;
             document.getElementById('totalVotos').textContent = totalVotos;
             document.getElementById('totalCategorias').textContent = uniqueCats.size;
-            
             filterRanking();
         }
 
         function renderCatDropdowns() {
             const filterSelect = document.getElementById('filterCategoria');
             const currentValue = filterSelect.value;
-            
             filterSelect.innerHTML = '<option value="Todas">Todas as categorias</option>'; 
-            
             const uniqueCats = [...new Set(propostas.map(p => p.category))].filter(c => c);
-            
-            uniqueCats.forEach(cat => {
-                filterSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
-            });
-
-            if (uniqueCats.includes(currentValue)) {
-                filterSelect.value = currentValue;
-            }
+            uniqueCats.forEach(cat => { filterSelect.innerHTML += `<option value="${cat}">${cat}</option>`; });
+            if (uniqueCats.includes(currentValue)) filterSelect.value = currentValue;
         }
 
         function renderAdminPropList() {
             const container = document.getElementById('adminPropList');
-            if (propostas.length === 0) { container.innerHTML = '<p style="color:#64748b;">Nenhuma proposta enviada ainda.</p>'; return; }
+            if (propostas.length === 0) { container.innerHTML = '<p style="color:#64748b;">Nenhuma proposta.</p>'; return; }
             container.innerHTML = '';
             [...propostas].sort((a, b) => b.votes - a.votes).forEach(p => {
                 container.innerHTML += `
                     <div class="admin-list-item">
                         <div><span>${p.title}</span><br><small>${p.author} • ${p.category}</small><br><strong style="color:#4f46e5;">${p.votes} votos</strong></div>
-                        <div>
-                            <button class="btn-small" onclick="removeProposta(${p.id})">Excluir</button>
-                        </div>
+                        <div><button class="btn-small" onclick="removeProposta(${p.id})">Excluir</button></div>
                     </div>`;
             });
         }
@@ -403,40 +387,16 @@
                 const matchCat = catFilter === 'Todas' || p.category === catFilter;
                 return matchName && matchCat;
             });
-            
             filtered.sort((a, b) => b.votes - a.votes);
 
-            if (filtered.length === 0) { container.innerHTML = '<p class="empty-state">Nenhuma proposta encontrada. Seja o primeiro a enviar! 💡</p>'; return; }
+            if (filtered.length === 0) { container.innerHTML = '<p class="empty-state">Nenhuma proposta encontrada. Seja o primeiro! 💡</p>'; return; }
             
-            let html = `<table class="ranking-table">
-                            <thead>
-                                <tr>
-                                    <th>Posição</th>
-                                    <th>Proposta</th>
-                                    <th>Autor</th>
-                                    <th>Categoria</th>
-                                    <th>Votos</th>
-                                    <th>Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
-            
+            let html = `<table class="ranking-table"><thead><tr><th>Posição</th><th>Proposta</th><th>Autor</th><th>Categoria</th><th>Votos</th><th>Ação</th></tr></thead><tbody>`;
             filtered.forEach((p, i) => {
                 let medal = i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '';
                 let jaVotou = meusVotos.includes(p.id);
-                
-                let btnVoto = jaVotou 
-                    ? `<button class="btn-vote voted">✅ Votado</button>` 
-                    : `<button class="btn-vote" onclick="vote(${p.id})">▲ Votar</button>`;
-
-                html += `<tr>
-                            <td style="font-weight: 600;">${medal}${i + 1}º</td>
-                            <td><strong>${p.title}</strong></td>
-                            <td style="color:#64748b;">${p.author}</td>
-                            <td><span class="badge-category">${p.category}</span></td>
-                            <td class="votes-count">${p.votes}</td>
-                            <td>${btnVoto}</td>
-                        </tr>`;
+                let btnVoto = jaVotou ? `<button class="btn-vote voted">✅ Votado</button>` : `<button class="btn-vote" onclick="vote(${p.id})">▲ Votar</button>`;
+                html += `<tr><td style="font-weight: 600;">${medal}${i + 1}º</td><td><strong>${p.title}</strong></td><td style="color:#64748b;">${p.author}</td><td><span class="badge-category">${p.category}</span></td><td class="votes-count">${p.votes}</td><td>${btnVoto}</td></tr>`;
             });
             container.innerHTML = html + `</tbody></table>`;
         }
@@ -447,7 +407,6 @@
             filterRanking();
         }
 
-        // Inicia tudo
         init();
     </script>
 </body>
